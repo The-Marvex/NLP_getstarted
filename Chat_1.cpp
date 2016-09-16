@@ -3,51 +3,83 @@
 #include<fstream>
 using namespace std;
 
-void read_file();
-void test();
+void count_words();
+void count_lines();
+string getdata_string();
+
+string file_name;
+string data_string;
+
+
 int main()
 {
-    read_file();
-    //test();
-}
-
-void read_file()
-{
-    char data[100];
-    string file_name;
-    ifstream file;
-    cout<<"Enter the name of the file you want to test"<<endl;
+	cout<<"Enter the name of the file you want to test"<<endl;
     cin>>file_name;
-    file.open(file_name.c_str());
-    file>>data;
-    cout<<data;
-    while(data != "xxx")
-    {
-        file>>data;
-        cout<<data;
-    }
+   // count_words();    
+   //count_lines();
+    data_string = getdata_string();
 }
 
-void test()
+void count_words()
 {
+	int count =0;
+    char data[100];    
+    ifstream file;    
+    file.open(file_name.c_str());   
+    while(!file.eof())
+	{
+		file>>data;
+		cout<<data;
+		count++;
+	}
+	cout<<"The no of words is"<<endl;
+	cout<<count;
+	file.close();	
+}
 
-   char data[100];
-   /*cout << "Writing to the file" << endl;
-   cout << "Enter your name: ";
-   cin.getline(data, 100);
-   outfile << data << endl;
-   cout << "Enter your age: ";
-   cin >> data;
-   cin.ignore();
-   outfile << data << endl;
-   outfile.close();*/
-   ifstream infile;
-   infile.open("tagore.txt");
-   cout << "Reading from the file" << endl;
-   infile >> data;
-   cout << data << endl;
-   infile >> data;
-   cout << data << endl;
-   infile.close();
+void count_lines()
+{	
+	int flag, count, lines;	
+    char x;    
+    ifstream file; 
+	count = 0;
+	flag = 0;
+	lines = 0; 
+    file.open(file_name.c_str());    
+    while(!file.eof())
+    {    	    	
+    	x = file.get();
+    	cout<<x;    	 
+    	
+		if(x=='\n')	flag = 1;
+		
+		if((x!='\n')&&(x!='\t')&&(x!=' '))
+		{
+			if(flag == 1) 
+			{				
+				lines++;
+				flag = 0;
+			}			
+		}					
+	}
+	file.close();	
+	cout<<endl<<"The no of lines is: "<<endl;
+	if(lines==0) cout<<lines<<endl;
+	else cout<<lines+1<<endl;
+}
+
+string getdata_string()
+{
+	ifstream file(file_name.c_str());
+    string word;
+    char x ;
+    word.clear();
+    int count  = 0;
+    while ((x = file.get())!= EOF)
+    {
+            word = word + x;
+    }
+    file.close();
+    return word;   
 }
 
