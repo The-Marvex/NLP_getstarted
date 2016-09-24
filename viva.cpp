@@ -19,17 +19,15 @@ string data_string;
 
 int main()
 {	
-	cout<<"Enter the name of the file"<<endl;
-	cin>>file_name;
-	count_words();
-	count_lines();
 	string input_string;
     data_string = getdata_string();
-    //cout<<"Enter something"<<endl;
-    //getline(cin, input_string);    
-    //vector<string> my_token = tokenize_sentence(input_string);
+    cout<<"Enter file_name"<<endl;
+    getline(cin, file_name); 
+    count_words();
+    count_lines();
+   // vector<string> my_token = tokenize_sentence(input_string);
     //vector<string>::iterator it;
-    /*for(it = my_token.begin();it!=my_token.end();++it )
+   /* for(it = my_token.begin();it!=my_token.end();++it )
     {
     	cout<< *it;
     }*/
@@ -47,8 +45,8 @@ void count_words()
 		cout<<data;
 		count++;
 	}
-	cout<<"The number of words is: ";
-	cout<<count<<endl;
+	cout<<"the no of words is: ";
+	cout<<count;
 	file.close();	
 }
 
@@ -73,16 +71,14 @@ void count_lines()
 			if(flag == 1) 
 			{				
 				lines++;
-
-				cout<<"got a line "<<lines<<endl;
 				flag = 0;
 			}			
 		}					
 	}
-	file.close();	
-	cout<<"The number of paragraphs is: "	;
+	file.close();		
+	cout<<"The no of lines is : ";
 	if(lines==0) cout<<lines<<endl;
-	else cout<<(lines+1)<<endl;
+	else cout<<lines+1<<endl;
 }
 
 string getdata_string()
