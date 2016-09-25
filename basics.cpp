@@ -43,8 +43,7 @@ void count_words()
     file.open(file_name.c_str());   
     while(!file.eof())
 	{
-		file>>data;
-		cout<<data;
+		file>>data;		
 		count++;
 	}
 	cout<<"The number of words is: ";
@@ -72,15 +71,13 @@ void count_lines()
 		{
 			if(flag == 1) 
 			{				
-				lines++;
-
-				cout<<"got a line "<<lines<<endl;
+				lines++;			
 				flag = 0;
 			}			
 		}					
 	}
 	file.close();	
-	cout<<"The number of paragraphs is: "	;
+	cout<<"The number of paragraphs is: ";
 	if(lines==0) cout<<lines<<endl;
 	else cout<<(lines+1)<<endl;
 }
