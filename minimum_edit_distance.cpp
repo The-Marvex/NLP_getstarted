@@ -3,6 +3,7 @@
 using namespace std;
 
 int minimum_edit_distance(string alpha, string beeta);
+int min (int a, int b, int c);
 
 int main()
 {	
@@ -18,15 +19,16 @@ int main()
 }
 int minimum_edit_distance(string alpha, string beeta)
 {
+	alpha = '#' + alpha;
+	beeta = "#" + beeta;
 	int alpha_size = alpha.size();
 	int beeta_size = beeta.size();
 	char alpha_array[alpha_size+1];
-	char beeta_array[beeta_size+1];
-	alpha_array[alpha_size] = '\0';
-	beeta_array[beeta_size] = '\0';
+	char beeta_array[beeta_size+1];		
 	strcpy(alpha_array, alpha.c_str());		
 	strcpy(beeta_array, beeta.c_str());		
 	int distance_table[alpha_size+1][beeta_size+1];	
+
 	for(int i = 0;i<=alpha_size;i++)
 	{
 		distance_table[i][0] = i;
@@ -36,22 +38,25 @@ int minimum_edit_distance(string alpha, string beeta)
 	{
 		distance_table[0][i] = i;
 	}
+
 	for(int i = 1;i<alpha_size;i++)
 	{
-		for(int j = 0;j<beeta_size;j++)
+		for(int j = 1;j<beeta_size;j++)
 		{
 			if(alpha_array[i] == beeta_array[j])
 			{
 				distance_table[i][j] = min((distance_table[i-1][j]+1),(distance_table[i][j-1]+1),(distance_table[i-1][j-1]));
+				cout<<"shobhit "<<alpha_array[i]<<endl;
 			}
 			else
 			{
 				distance_table[i][j] = min((distance_table[i-1][j]+1),(distance_table[i][j-1]+1),(distance_table[i-1][j-1]+2));	
+				cout<<"raghav "<<beeta_array[i]<<endl;
 			}
 		}
 	}
 
-	for(int i = 1;i<alpha_size;i++)
+	for(int i = 0;i<alpha_size;i++)
 	{
 		for(int j = 0;j<beeta_size;j++)
 		{
@@ -60,6 +65,15 @@ int minimum_edit_distance(string alpha, string beeta)
 		cout<<endl;
 	}
 
-	return 5;
+	return distance_table[alpha.size()-1][beeta.size()-1];
 	
+}
+
+int min (int a, int b, int c)
+{
+	int min;
+	if(a<b) min = a;
+	else min = b;
+	if(min<c)	 return min;		 
+	else return c;
 }

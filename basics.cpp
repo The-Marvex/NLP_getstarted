@@ -7,33 +7,92 @@ using namespace std;
 
 void count_words();
 void count_lines();
-string getdata_string();
+string get_data_string();
 vector<string> tokenize_sentence(string sentence);
 vector<int> KMP_implementation(string text_string, string pattern_string) ;
 vector<int> search_substring(string text_string, string pattern_string);
 void get_partial_match_table(string pattern_string, int pattern_len, int pmt[]);
+vector <string> text2sentence(string text);
 
 string file_name;
 string data_string;
 
 
 int main()
-{	
-	cout<<"Enter the name of the file"<<endl;
-	cin>>file_name;
-	count_words();
-	count_lines();
-	string input_string;
-    data_string = getdata_string();
-    //cout<<"Enter something"<<endl;
-    //getline(cin, input_string);    
-    //vector<string> my_token = tokenize_sentence(input_string);
-    //vector<string>::iterator it;
-    /*for(it = my_token.begin();it!=my_token.end();++it )
-    {
-    	cout<< *it;
-    }*/
+{		
+	/*string input_string;
+    cout<<"Enter something"<<endl;
+    getline(cin, input_string);    
+    vector<string> my_token = tokenize_sentence(input_string);
+    for(int x = 0;x<my_token.size();x++)	
+	{
+		cout<<my_token.at(x)<<" ";
+	}*/
+		cout<<"Enter the file name"<<endl;
+		getline(cin, file_name);
+		data_string = get_data_string();
+		text2sentence(data_string);
 }
+
+vector <string> text2sentence(string text)
+{
+	int init_vec_size = 10;
+	int k;
+	int b = 0;
+	int pre_index =0;
+	int post_index = 0;
+    int text_size = text.size();    
+    char text_array[text_size+1];
+    text_array[text_size] = '\0';
+    for(int i = 0;i<=text_size;i++)
+    {
+    	cout<<text_array[i];
+    }
+    strcpy(text_array, text.c_str());
+    vector<string> sentences(init_vec_size);
+    vector<char> temp_vector(50);
+    string str;	
+    int i = 0;    
+
+    while(text_array[i]!='\0')
+    {
+    	if(text_array[i] == '.')
+    	{    		
+    		post_index = i;
+    		temp_vector.resize(post_index - pre_index +1);
+    		k = 0;
+    		for(int y = pre_index;y<post_index;y++)
+    		{    			
+    			temp_vector.at(k) = text_array[y];
+    			k++;
+    		}
+    		pre_index = post_index+2;
+    		k = 0;    
+			while(k<temp_vector.size())    				
+			{				
+				str = str + temp_vector.at(k);
+				k++;
+			}			
+    	}
+
+    	sentences.at(b) = str;
+    	str.clear();
+    	b++;    		
+		if(b == init_vec_size) 
+		{
+			sentences.resize(2*init_vec_size);
+			init_vec_size = (2*init_vec_size);
+		}
+    	i++;    	
+    }
+
+    for(int i = 0;i<sentences.size();i++)
+    {
+    	cout<<sentences.at(i)<<endl;
+    }
+}
+
+
 
 void count_words()
 {
@@ -77,12 +136,12 @@ void count_lines()
 		}					
 	}
 	file.close();	
-	cout<<"The number of paragraphs is: ";
+	cout<<"The number of lines is: ";
 	if(lines==0) cout<<lines<<endl;
 	else cout<<(lines+1)<<endl;
 }
 
-string getdata_string()
+string get_data_string()
 {
 	ifstream file(file_name.c_str());
     string word;
@@ -99,11 +158,13 @@ string getdata_string()
 
 vector<string> tokenize_sentence(string sentence)
 {
-	vector<string> token_vector;			
+	int init_size_vector = 20;
+	vector<string> token_vector(init_size_vector);			
 	int size_sentence = sentence.size();	
 	char tab2[size_sentence+1];	
 	tab2[size_sentence+1] = '\0';
-	strcpy(tab2, sentence.c_str());		
+	strcpy(tab2, sentence.c_str());	
+	int index = 0;	
 	int pre_index = 0;
 	int post_index = 0;	
 	vector<int> index_vector = KMP_implementation(sentence, " ");	
@@ -125,14 +186,15 @@ vector<string> tokenize_sentence(string sentence)
 		}		
 		temp = arr;				
 		m = m+2;	
-		p = index_vector[m];	
+		p = index_vector[m];		
+		token_vector.at(index) = temp;
+		index++;	
+		if(index == init_size_vector) 
+		{
+			token_vector.resize(2*init_size_vector);
+			init_size_vector = 2*init_size_vector;
+		}
 	}	
-	token_vector.push_back(temp);
-	vector<string>::iterator it;
-    for(it = token_vector.begin();it!= token_vector.end();++it )
-    {
-    	cout<< *it<<"   bhghsanjevhh";
-    }
 	return token_vector;
 }
 
