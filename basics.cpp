@@ -20,18 +20,18 @@ string data_string;
 
 int main()
 {		
-	/*string input_string;
+	string input_string;
     cout<<"Enter something"<<endl;
     getline(cin, input_string);    
     vector<string> my_token = tokenize_sentence(input_string);
     for(int x = 0;x<my_token.size();x++)	
 	{
 		cout<<my_token.at(x)<<" ";
-	}*/
-		cout<<"Enter the file name"<<endl;
+	}
+		/*cout<<"Enter the file name"<<endl;
 		getline(cin, file_name);
 		data_string = get_data_string();
-		text2sentence(data_string);
+		text2sentence(data_string);*/
 }
 
 vector <string> text2sentence(string text)
@@ -39,6 +39,7 @@ vector <string> text2sentence(string text)
 	int init_vec_size = 10;
 	int k;
 	int b = 0;
+	int no_of_lines =0;
 	int pre_index =0;
 	int post_index = 0;
     int text_size = text.size();    
@@ -56,8 +57,9 @@ vector <string> text2sentence(string text)
 
     while(text_array[i]!='\0')
     {
-    	if(text_array[i] == '.')
+    	if((text_array[i] == '.')&&(text_array[i+1]!='.'))
     	{    		
+    		no_of_lines++;
     		post_index = i;
     		temp_vector.resize(post_index - pre_index +1);
     		k = 0;
@@ -90,6 +92,8 @@ vector <string> text2sentence(string text)
     {
     	cout<<sentences.at(i)<<endl;
     }
+
+    cout<<"The no of lines is : "<<no_of_lines<<endl;
 }
 
 
@@ -156,48 +160,116 @@ string get_data_string()
     return word;   
 }
 
-vector<string> tokenize_sentence(string sentence)
+vector<string> tokenizer(string sentence)
 {
-	int init_size_vector = 20;
-	vector<string> token_vector(init_size_vector);			
-	int size_sentence = sentence.size();	
-	char tab2[size_sentence+1];	
-	tab2[size_sentence+1] = '\0';
-	strcpy(tab2, sentence.c_str());	
-	int index = 0;	
-	int pre_index = 0;
-	int post_index = 0;	
-	vector<int> index_vector = KMP_implementation(sentence, " ");	
-	index_vector.push_back(size_sentence-1);
-	//cout<<"size of vector is "<<index_vector.size()<<endl;	
+	int p;
+	sentence = strtrim(sentence);	
+	vector<string> tokens (10);		
+	vector<int> index_vector = get_white_spaces(sentence);	
+	int pre,post,length,i;
+	i= 0;
+	length = 0;
 	string temp;
-	string tokens[(index_vector.size())/2];	
-	int p = 0;
-	int m = 0;
-	while(m<= index_vector.size()-2)
+	while(i < index_vector.size())
 	{
-		int temp_size = index_vector[m+1] - index_vector[m] + 1;			
-		char arr[temp_size];
-		int start = p;
-		for(int k = 0;k<temp_size;k++)
-		{									
-			arr[k] = tab2[start];			
-			start++;
-		}		
-		temp = arr;				
-		m = m+2;	
-		p = index_vector[m];		
-		token_vector.at(index) = temp;
-		index++;	
-		if(index == init_size_vector) 
+		if((i ==0)||(index_vector.at(i) !=0))
 		{
-			token_vector.resize(2*init_size_vector);
-			init_size_vector = 2*init_size_vector;
+			temp.clear();
+			pre = index_vector.at(i);
+			post = index_vector.at(i+1);			
+			for(int j = pre;j<=post;j++)
+			{
+				temp = temp + sentence[j];
+			}			
+			tokens.at(length) = temp;
+			length++;		
 		}
+
+		i = i+2;
 	}	
-	return token_vector;
+	return tokens;
+}
+vector<int> get_white_spaces(string sentence)
+{	
+	vector<int> space_index(20);
+	char x;
+	int i = 0;
+	int j,k;
+	k = 0;
+	int diff = 0;	
+	space_index.at(k) = 0;
+	k++;
+	while(i<sentence.size())
+	{		
+		if(sentence[i] == ' ')
+		{
+			space_index.at(k) = i-1;
+			k++;
+			j = i;
+			while(j<sentence.size()-1)
+			{				
+				if((sentence[j]==' ')&&(sentence[j+1]!=' ')) 
+				{			
+					space_index.at(k) = j+1;
+					k++;
+					break;
+				}
+				else j++;
+			}						
+			diff = j-i;
+			i = j+1;			
+		}	
+		else i++;			
+		 
+	}
+	space_index.at(k) = sentence.size()-1;	
+	return space_index;
 }
 
+string strtrim(string sentence)
+{	
+	int i = 0;
+	sentence = sentence.c_str();
+	int j = sentence.size()-1;	
+	char x;		
+	while(i < j)
+	{
+		if(sentence[0] != ' ') 
+		{
+				i = 0;
+				break;
+		}
+		else if((sentence[i] == ' ') && (sentence[i+1] != ' ')) 
+		{
+				i = i+1;
+				break;
+		}
+		else
+		{
+			i++;			
+		}
+	}	
+	while(j>0)
+	{
+		if(sentence[sentence.size()-1] != ' ') break;		
+		else if((sentence[j] == ' ') && (sentence[j-1]!=' ')) 
+		{	
+			j = j-1;
+			break;
+		}
+		else j--;
+	}
+	string trm_str;
+	trm_str.clear();	
+
+	for(int k = i; k<=j; k++)
+	{
+		x = sentence[k];
+		trm_str = trm_str + x;		
+	}	
+	return trm_str;
+
+}
 vector<int> KMP_implementation(string text_string, string pattern_string)   //This is implementation of KMP algorithm
 {	vector<int> v;
 	v = search_substring(text_string, pattern_string);
