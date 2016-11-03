@@ -13,6 +13,8 @@ vector<int> KMP_implementation(string text_string, string pattern_string) ;
 vector<int> search_substring(string text_string, string pattern_string);
 void get_partial_match_table(string pattern_string, int pattern_len, int pmt[]);
 vector <string> text2sentence(string text);
+string strtrim(string sentence);
+vector<int> get_white_spaces(string sentence);
 
 string file_name;
 string data_string;
@@ -28,10 +30,7 @@ int main()
 	{
 		cout<<my_token.at(x)<<" ";
 	}
-		/*cout<<"Enter the file name"<<endl;
-		getline(cin, file_name);
-		data_string = get_data_string();
-		text2sentence(data_string);*/
+		
 }
 
 vector <string> text2sentence(string text)
