@@ -38,24 +38,24 @@ bool parse_for_syntax ();
 void parse_convo();
 void get_convo_info(string file_name);
 void print_vector(vector<string> vec);
-vector <string> dictionary(20);
+vector <string> dictionary(50);
 int dictionary_index;
-vector <string> dictionary_desc(20);
+vector <string> dictionary_desc(50);
 void get_dictionary();
 vector <string> conversation(4);
 
 int main()
 {	
 	get_dictionary();	
+	print_vector(dictionary);
+	print_vector(dictionary_desc);
 	print_vector(conversation);
 	get_convo_info("text.txt");
-	cout<<endl<<endl;
-
-	print_vector(tokenizer(conversation.at(0)));
-	remove_noise();
-	cout<<"SANJEEVVVVVVVVVVVVVVVVVVVMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM kdnsjcbduh    uhsbhs"<<endl;
-	print_vector(tokenizer(conversation.at(0)));
-	//parse_for_syntax();
+	remove_noise();	
+	
+	parse_convo();	
+	print_vector(dictionary);
+	print_vector(dictionary_desc);
 	POS_tagging();
 }
 
@@ -64,18 +64,15 @@ void parse_convo()
 	string line_of_convo;
 	vector <string> tokens;
 	int j;
-	string temp;
-	print_vector(conversation);
-	
 	for(int i = 0;i<conversation.size();i++)
 	{
 		line_of_convo = conversation.at(i);
 		tokens = tokenizer(line_of_convo);
 		for(int j = 0;j<tokens.size();j++)
 		{
-			if(!dictionary_Contains(tokens.at(i)))
+			if(!dictionary_Contains(tokens.at(j)))
 			{
-				dictionary.at(dictionary_index) = tokens.at(j);
+				dictionary.at(dictionary_index) = strtrim(tokens.at(j));
 				dictionary_desc.at(dictionary_index) = "NN";
 				dictionary_index++;
 			}			
@@ -89,10 +86,12 @@ int get_index_in_vector(string word, vector<string> vector1)
 	for(int  i = 0;i<vector1.size();i++)
 	{
 		if(vector1.at(i).compare(word) == 0)
-			index = i;
-			break;
+			
+			{
+				index = i;
+				break;
+			}
 	}
-
 	return index;	
 }
 
@@ -101,18 +100,16 @@ void POS_tagging()
 	cout<<"The POS_tagging is given as: "<<endl;	
 	vector<string> tokens;
 	for(int i = 0;i<conversation.size();i++)
-	{
-		cout<<conversation.at(i)<<" CCConversation"<<endl;
-		tokens = tokenizer(conversation.at(i));
-		cout<<"Going to print the vectors"<<endl;
-		print_vector(tokens);
+	{		
+		tokens = tokenizer(conversation.at(i));				
 		for(int j = 0;j<tokens.size();j++)
-		{			
-			cout<<tokens.at(i)<<"AAAAAAAAAAAASSSSSSSSSSSSS"<<endl;
-			cout<<dictionary.at(get_index_in_vector(tokens.at(i),dictionary))<<"  ";
-			cout<<dictionary_desc.at(get_index_in_vector(tokens.at(i),dictionary_desc))<<"      ";
+		{				
+			int k = get_index_in_vector(strtrim(tokens.at(j)), dictionary);
+			cout<<dictionary.at(k)<<" ";
+			cout<<dictionary_desc.at(k)<<endl;
+			//cout<<get_index_in_vector(strtrim(tokens.at(j)),dictionary_desc)<<endl;
 		}
-		cout<<endl;
+		cout<<endl<<endl;
 	}
 }
 
@@ -341,15 +338,17 @@ void remove_noise()
 		for(int j = 0;j<convo_tokens.size();j++)
 		{			
 
-			string temp = convo_tokens.at(j);
+			string temp = strtrim(convo_tokens.at(j));
 						
-			if(!dictionary_Contains(convo_tokens.at(j)))
-			{								
-				if(convo_tokens.at(j).size() <= 3)
-				{
-					if((convo_tokens.at(j).compare("ugh") == 0 )||(convo_tokens.at(j).compare("hmm") == 0)||(convo_tokens.at(j).compare("ohh") == 0)
-						||(convo_tokens.at(j).compare("ahh") == 0)) 
-					{												
+			if(!dictionary_Contains(temp))
+			{											
+
+				if(temp.size() <= 3)					
+				{							
+
+					if((temp.compare("ugh") == 0 )||(temp.compare("hmm") == 0)||(temp.compare("ohh") == 0)
+						||(temp.compare("ahh") == 0)) 
+					{							
 						noise_index.at(index) = j;
 						index ++;
 					}	
@@ -382,15 +381,10 @@ void remove_noise()
 				corrected_convo = corrected_convo + " " + temp;
 			}
 		}
-		
-		cout<<"ATTENPT TO"<<corrected_convo<<endl;
-		print_vector(tokenizer(corrected_convo));
+				
 		conversation.at(i) = corrected_convo;	
 		corrected_convo.clear();	
-	}
-
-	cout<<"IN THE FUNCTION REMOVE NOISE"<<endl;
-	print_vector(tokenizer(conversation.at(0)));
+	}		
 }
 
 
@@ -614,8 +608,7 @@ void get_dictionary()
 		dictionary.at(dictionary_index) = word;		
 		
 		string tag = e->Attribute("tags");	
-		dictionary_desc.at(dictionary_index) = tag;
-		cout<<tag<<endl;	
+		dictionary_desc.at(dictionary_index) = tag;		
 		dictionary_index ++;	
 	}
 
