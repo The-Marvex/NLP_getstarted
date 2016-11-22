@@ -43,20 +43,40 @@ int dictionary_index;
 vector <string> dictionary_desc(50);
 void get_dictionary();
 vector <string> conversation(4);
+vector <vector<string> > keyword(4);
 
 int main()
 {	
-	get_dictionary();	
-	print_vector(dictionary);
-	print_vector(dictionary_desc);
-	print_vector(conversation);
+	get_dictionary();			
 	get_convo_info("text.txt");
-	remove_noise();	
-	
-	parse_convo();	
-	print_vector(dictionary);
-	print_vector(dictionary_desc);
+	remove_noise();		
+	parse_convo();		
 	POS_tagging();
+
+}
+
+void extract_keywords(int i)
+{
+
+	vector <string> alpha;	
+	int index  =0;
+	int index2 = 0;
+	for(int i = 0;i<conversation.size();i++)
+	{
+		alpha = tokenizer(conversation.at(i));
+		for(int j = 0;j < alpha.size(); j++)
+		{
+			int k = get_index_in_vector(strtrim(alpha.at(j)), dictionary);
+
+			if((dictionary_desc.at(k).compare("NN"))||(dictionary_desc.at(k).compare("VB"))||(dictionary_desc.at(k).compare("AJ")))
+			{
+				keyword.at(index).at(index2) = dictionary.at(k);
+				index2++;
+			}			
+		}
+		index++;
+	}
+
 }
 
 void parse_convo()
