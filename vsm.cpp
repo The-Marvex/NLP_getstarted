@@ -18,9 +18,11 @@ string strtrim(string sentence);
 vector<string> tokenizer(string sentence);
 vector<int> vector_generation(string query);
 bool vector_Contains(string word, vector<string> in_search_vector);
+void POS_tagging();
 void get_partial_match_table(string pattern_string, int pattern_len, int pmt[]);
 vector<int> get_white_spaces(string sentence);
 bool dictionary_Contains(string word);
+int get_index_in_vector(string word, vector<string> vector1);
 void add_in_dictionary();
 bool search_substring(string text_string, string pattern_string);
 void suggest_command(string input);
@@ -32,9 +34,13 @@ vector<int> vector_generation(string query);
 string get_data_string(string file_name);
 int calculate_rank(string possible_soln, string query);
 bool is_not_punctuation(char x);
+bool parse_for_syntax ();
+void parse_convo();
 void get_convo_info(string file_name);
 void print_vector(vector<string> vec);
 vector <string> dictionary(20);
+int dictionary_index;
+vector <string> dictionary_desc(20);
 void get_dictionary();
 vector <string> conversation(4);
 
@@ -44,14 +50,84 @@ int main()
 	print_vector(conversation);
 	get_convo_info("text.txt");
 	cout<<endl<<endl;
+
+	print_vector(tokenizer(conversation.at(0)));
 	remove_noise();
+	cout<<"SANJEEVVVVVVVVVVVVVVVVVVVMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM kdnsjcbduh    uhsbhs"<<endl;
+	print_vector(tokenizer(conversation.at(0)));
+	//parse_for_syntax();
+	POS_tagging();
+}
+
+void parse_convo()
+{
+	string line_of_convo;
+	vector <string> tokens;
+	int j;
+	string temp;
 	print_vector(conversation);
+	
+	for(int i = 0;i<conversation.size();i++)
+	{
+		line_of_convo = conversation.at(i);
+		tokens = tokenizer(line_of_convo);
+		for(int j = 0;j<tokens.size();j++)
+		{
+			if(!dictionary_Contains(tokens.at(i)))
+			{
+				dictionary.at(dictionary_index) = tokens.at(j);
+				dictionary_desc.at(dictionary_index) = "NN";
+				dictionary_index++;
+			}			
+		}
+	}	
+}
+
+int get_index_in_vector(string word, vector<string> vector1)
+{
+	int index = 0;
+	for(int  i = 0;i<vector1.size();i++)
+	{
+		if(vector1.at(i).compare(word) == 0)
+			index = i;
+			break;
+	}
+
+	return index;	
+}
+
+void POS_tagging()
+{
+	cout<<"The POS_tagging is given as: "<<endl;	
+	vector<string> tokens;
+	for(int i = 0;i<conversation.size();i++)
+	{
+		cout<<conversation.at(i)<<" CCConversation"<<endl;
+		tokens = tokenizer(conversation.at(i));
+		cout<<"Going to print the vectors"<<endl;
+		print_vector(tokens);
+		for(int j = 0;j<tokens.size();j++)
+		{			
+			cout<<tokens.at(i)<<"AAAAAAAAAAAASSSSSSSSSSSSS"<<endl;
+			cout<<dictionary.at(get_index_in_vector(tokens.at(i),dictionary))<<"  ";
+			cout<<dictionary_desc.at(get_index_in_vector(tokens.at(i),dictionary_desc))<<"      ";
+		}
+		cout<<endl;
+	}
 }
 
 
-bool parse_for_syntax (string sentence)
+
+bool parse_for_syntax ()
 {	
-	vector <int> q_tokens(10);
+	vector <string> q_tokens(10);
+	q_tokens.at(0) = "AT";
+	q_tokens.at(1) = "AJ";
+	q_tokens.at(2) = "PN";
+	q_tokens.at(3) = "VB";
+	q_tokens.at(3) = "PP";
+	q_tokens.at(4) = "PN";
+
 	int p = 0;
 	bool article_start = false;
 	bool has_adjective = false;
@@ -60,33 +136,46 @@ bool parse_for_syntax (string sentence)
 	while(p == 0)
 	{
 	
-		if (q_tokens.at(0) == 0) article_start = true;
+		if (q_tokens.at(0).compare("AT") == 0) article_start = true;
 
 		if(article_start)
 		{
-			if(q_tokens.at(1) == 1) has_adjective = true;
+			cout<<"has article_start"<<endl;
+			if(q_tokens.at(1).compare("AJ") == 0) has_adjective = true;
 
 			if(has_adjective)
 			{
-				if((q_tokens.at(2) == 0)||(q_tokens.at(2) == 1)||(q_tokens.at(2) == 2))
+				cout<<"has adjective _start"<<endl;
+				if((q_tokens.at(2).compare("NN") == 0)||(q_tokens.at(2).compare("PN") == 0))
 				{
-					if(q_tokens.at(3) == 5)
+					cout<<"has some noun"<<endl;
+
+					if(q_tokens.at(3).compare("VB") == 0)
 					{
-						if(q_tokens.at(4) == 6) has_preposition = true;
+						cout<<"has verb "<<endl;
+
+						if(q_tokens.at(4).compare("PP") == 0) has_preposition = true;
+
 						if(has_preposition)
 						{
-							if((q_tokens.at(5) == 0)||(q_tokens.at(5) == 1)||(q_tokens.at(5) == 2))
+
+							cout<<"has preposition"<<endl;
+							if((q_tokens.at(5).compare("NN") == 0)||(q_tokens.at(5).compare("PN") == 0))
 							{
+								cout<<"has predicate noun"<<endl;
 								accepted = true;
-								break;
+								cout<<"Accepted"<<endl;
+								p =1;
 							}
 						}
 						else
 						{
-							if((q_tokens.at(4) == 0)||(q_tokens.at(4) == 1)||(q_tokens.at(4) == 2))
+							if((q_tokens.at(4).compare("NN") == 0)||(q_tokens.at(4).compare("PN") == 0))
 							{
+								cout<<"has no preposition"<<endl;
+								cout<<"accepted"<<endl;
 								accepted = true;
-								break;
+								p = 1;
 							}
 						}
 					}
@@ -98,28 +187,31 @@ bool parse_for_syntax (string sentence)
 					break;
 				}
 			}
+
 			else
 			{
 
-				if((q_tokens.at(1) == 0)||(q_tokens.at(1) == 1)||(q_tokens.at(1) == 2))
+				if((q_tokens.at(1).compare("NN") == 0)||(q_tokens.at(1).compare("PN") == 0))
 				{
-					if(q_tokens.at(2) == 5)
+					if(q_tokens.at(2).compare("VB") == 0)
 					{
-						if(q_tokens.at(3) == 6) has_preposition = true;
+						if(q_tokens.at(3).compare("PP") == 0) has_preposition = true;
 						if(has_preposition)
 						{
-							if((q_tokens.at(4) == 0)||(q_tokens.at(4) == 1)||(q_tokens.at(4) == 2))
+							if((q_tokens.at(4).compare("NN") == 0)||(q_tokens.at(4).compare("PN") == 0))
 							{
+								cout<<"accepted"<<endl;
 								accepted = true;
-								break;
+								p = 1;
 							}
 						}
 						else
 						{
-							if((q_tokens.at(3) == 0)||(q_tokens.at(3) == 1)||(q_tokens.at(3) == 2))
+							if((q_tokens.at(3).compare("NN") == 0)||(q_tokens.at(3).compare("PN") == 0))
 							{
+								cout<<"accepted"<<endl;
 								accepted = true;
-								break;
+								p = 1;
 							}
 						}
 					}
@@ -138,29 +230,36 @@ bool parse_for_syntax (string sentence)
 
 		if(!article_start)
 		{
-			if(q_tokens.at(0) == 0) has_adjective = true;
+			cout<<"has no article..YYY"<<endl;
+			if(q_tokens.at(0).compare("AJ") == 0) has_adjective = true;
 
 			if(has_adjective)
 			{
-				if((q_tokens.at(1) == 0)||(q_tokens.at(1) == 1)||(q_tokens.at(1) == 2))
+				cout<<"has adjective..YYY"<<endl;
+				if((q_tokens.at(1).compare("NN") == 0)||(q_tokens.at(1).compare("PN") == 0))
 				{
-					if(q_tokens.at(2) == 5)
+					cout<<"HAS NOUN"<<endl;
+					if(q_tokens.at(2).compare("VB") == 0)
 					{
-						if(q_tokens.at(3) == 6) has_preposition = true;
+						cout<<"has verb"<<endl;
+						if(q_tokens.at(3).compare("PP") == 0) has_preposition = true;
 						if(has_preposition)
 						{
-							if((q_tokens.at(4) == 0)||(q_tokens.at(4) == 1)||(q_tokens.at(4) == 2))
+							cout<<"has prepoSITION"<<endl;
+							if((q_tokens.at(4).compare("NN") == 0)||(q_tokens.at(4).compare("PN") ==0))
 							{
+								cout<<"THIS IS predicate noun"<<endl;
 								accepted = true;
-								break;
+								p = 1;
 							}
 						}
 						else
 						{
-							if((q_tokens.at(3) == 0)||(q_tokens.at(3) == 1)||(q_tokens.at(3) == 2))
+							cout<<"has NO preposition in sentence"<<endl;
+							if((q_tokens.at(3).compare("NN") == 0)||(q_tokens.at(3).compare("PN") == 0))
 							{
 								accepted = true;
-								break;
+								p = 1;
 							}
 						}
 					}
@@ -174,26 +273,35 @@ bool parse_for_syntax (string sentence)
 			}
 			else
 			{
+				cout<<"has NO adjective..YYY"<<endl;
 
-				if((q_tokens.at(0) == 0)||(q_tokens.at(0) == 1)||(q_tokens.at(0) == 2))
+				if((q_tokens.at(0).compare("NN") == 0)||(q_tokens.at(0).compare("PN") == 0))
 				{
-					if(q_tokens.at(1) == 5)
+					cout<<"FIRST WORD AS noun"<<endl;
+					if(q_tokens.at(1).compare("VB") == 0)
 					{
-						if(q_tokens.at(2) == 6) has_preposition = true;
+
+						cout<<"second WORD AS verb"<<endl;
+						if(q_tokens.at(2).compare("PP") == 0) has_preposition = true;
 						if(has_preposition)
 						{
-							if((q_tokens.at(3) == 0)||(q_tokens.at(3) == 1)||(q_tokens.at(3) == 2))
+							cout<<"has a preposition"<<endl;
+							if((q_tokens.at(3).compare("NN") == 0)||(q_tokens.at(3).compare("PN") == 0))
 							{
+								cout<<"Final noun"<<endl;
 								accepted = true;
-								break;
+								p = 1;
 							}
 						}
 						else
 						{
-							if((q_tokens.at(2) == 0)||(q_tokens.at(2) == 1)||(q_tokens.at(2) == 2))
+							cout<<"no preposition YYYY"<<endl;
+							if((q_tokens.at(2).compare("NN") == 0)||(q_tokens.at(2).compare("PN") == 0))
 							{
+								cout<<"Final noun"<<endl;
+								cout<<"Accepted"<<endl;
 								accepted = true;
-								break;
+								p = 1;
 							}
 						}
 					}
@@ -213,9 +321,9 @@ bool parse_for_syntax (string sentence)
 	}
 
 	cout<<"AAAAAAAAAAAAAAAAAAAAAAAAAAAAA"<<endl;
+	if(accepted) cout<<"VALID INPUT"<<endl;
+	else cout<<"INVALID INPUT, plaese ask acc to grammar"<<endl;
 	return accepted;
-
-
 }
 
 void remove_noise()
@@ -224,6 +332,7 @@ void remove_noise()
 	vector <string> convo_tokens(10);
 	int index;
 	string corrected_convo = "";
+	corrected_convo.clear();
 	for(int i = 0; i<conversation.size();i++)
 	{		
 		convo_tokens = tokenizer(conversation.at(i));		
@@ -235,8 +344,7 @@ void remove_noise()
 			string temp = convo_tokens.at(j);
 						
 			if(!dictionary_Contains(convo_tokens.at(j)))
-			{				
-				
+			{								
 				if(convo_tokens.at(j).size() <= 3)
 				{
 					if((convo_tokens.at(j).compare("ugh") == 0 )||(convo_tokens.at(j).compare("hmm") == 0)||(convo_tokens.at(j).compare("ohh") == 0)
@@ -245,7 +353,8 @@ void remove_noise()
 						noise_index.at(index) = j;
 						index ++;
 					}	
-					else
+
+					else					
 					{
 						corrected_convo = corrected_convo + " " + temp;
 					}				
@@ -274,9 +383,14 @@ void remove_noise()
 			}
 		}
 		
+		cout<<"ATTENPT TO"<<corrected_convo<<endl;
+		print_vector(tokenizer(corrected_convo));
 		conversation.at(i) = corrected_convo;	
 		corrected_convo.clear();	
-	}	
+	}
+
+	cout<<"IN THE FUNCTION REMOVE NOISE"<<endl;
+	print_vector(tokenizer(conversation.at(0)));
 }
 
 
@@ -486,7 +600,7 @@ bool is_not_punctuation(char x)
 
 void get_dictionary()
 {
-	int index = 0;
+	dictionary_index = 0;
 	XMLDocument xmlDoc1;
 	XMLError eResult = xmlDoc1.LoadFile("dictionary.xml");
 	XMLNode *pRoot = xmlDoc1.FirstChild();
@@ -497,10 +611,12 @@ void get_dictionary()
 		const char* word = token->GetText();		
 		int size = strlen(word);		
 		my_word.assign(word, size);
-		dictionary.at(index) = word;
-		index ++;		
+		dictionary.at(dictionary_index) = word;		
+		
 		string tag = e->Attribute("tags");	
+		dictionary_desc.at(dictionary_index) = tag;
 		cout<<tag<<endl;	
+		dictionary_index ++;	
 	}
 
 }
@@ -534,21 +650,6 @@ void print_vector(vector<string> vec)
 	}
 	cout<<endl;
 }
-
-
-void add_in_dictionary()
-{
-	dictionary.at(0) = "i";
-	dictionary.at(1) = "am";
-	dictionary.at(2) = "man";
-	dictionary.at(3) = "go";
-	dictionary.at(4) = "doesnt";
-	dictionary.at(5) = "how";
-	dictionary.at(6) = "ice";
-	dictionary.at(7) = "matter";
-	dictionary.at(8) = "icecream";
-}
-
 
 
 bool vector_Contains(string word, vector<string> in_search_vector)
@@ -629,6 +730,7 @@ vector<string> tokenizer(string sentence)
 	i= 0;
 	length = 0;
 	string temp;
+	int one;
 	while(i < index_vector.size())
 	{
 		if((i ==0)||(index_vector.at(i) !=0))
@@ -636,15 +738,17 @@ vector<string> tokenizer(string sentence)
 			temp.clear();
 			pre = index_vector.at(i);
 			post = index_vector.at(i+1);
-			for(int j = pre;j<=post;j++)
+			for(int j = pre;j<=post+1;j++)
 			{
-				temp = temp + sentence[j];
-			}
+				temp = temp + sentence[j];			
+				one  = j;
+			}			
 			tokens.at(length) = temp;
 			length++;
 		}
 		i = i+2;
-	}
+	}	
+	//print_vector(tokens);
 	return tokens;
 }
 
