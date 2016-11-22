@@ -41,10 +41,181 @@ vector <string> conversation(4);
 int main()
 {	
 	get_dictionary();	
-	print_vector(dictionary);
+	print_vector(conversation);
 	get_convo_info("text.txt");
 	cout<<endl<<endl;
 	remove_noise();
+	print_vector(conversation);
+}
+
+
+bool parse_for_syntax (string sentence)
+{	
+	vector <int> q_tokens(10);
+	int p = 0;
+	bool article_start = false;
+	bool has_adjective = false;
+	bool has_preposition = false;
+	bool accepted = false;
+	while(p == 0)
+	{
+	
+		if (q_tokens.at(0) == 0) article_start = true;
+
+		if(article_start)
+		{
+			if(q_tokens.at(1) == 1) has_adjective = true;
+
+			if(has_adjective)
+			{
+				if((q_tokens.at(2) == 0)||(q_tokens.at(2) == 1)||(q_tokens.at(2) == 2))
+				{
+					if(q_tokens.at(3) == 5)
+					{
+						if(q_tokens.at(4) == 6) has_preposition = true;
+						if(has_preposition)
+						{
+							if((q_tokens.at(5) == 0)||(q_tokens.at(5) == 1)||(q_tokens.at(5) == 2))
+							{
+								accepted = true;
+								break;
+							}
+						}
+						else
+						{
+							if((q_tokens.at(4) == 0)||(q_tokens.at(4) == 1)||(q_tokens.at(4) == 2))
+							{
+								accepted = true;
+								break;
+							}
+						}
+					}
+
+					else break;																
+				}
+				else
+				{
+					break;
+				}
+			}
+			else
+			{
+
+				if((q_tokens.at(1) == 0)||(q_tokens.at(1) == 1)||(q_tokens.at(1) == 2))
+				{
+					if(q_tokens.at(2) == 5)
+					{
+						if(q_tokens.at(3) == 6) has_preposition = true;
+						if(has_preposition)
+						{
+							if((q_tokens.at(4) == 0)||(q_tokens.at(4) == 1)||(q_tokens.at(4) == 2))
+							{
+								accepted = true;
+								break;
+							}
+						}
+						else
+						{
+							if((q_tokens.at(3) == 0)||(q_tokens.at(3) == 1)||(q_tokens.at(3) == 2))
+							{
+								accepted = true;
+								break;
+							}
+						}
+					}
+
+					else break;																
+				}
+
+				else
+				{
+					break;
+				}
+
+			}
+		}
+
+
+		if(!article_start)
+		{
+			if(q_tokens.at(0) == 0) has_adjective = true;
+
+			if(has_adjective)
+			{
+				if((q_tokens.at(1) == 0)||(q_tokens.at(1) == 1)||(q_tokens.at(1) == 2))
+				{
+					if(q_tokens.at(2) == 5)
+					{
+						if(q_tokens.at(3) == 6) has_preposition = true;
+						if(has_preposition)
+						{
+							if((q_tokens.at(4) == 0)||(q_tokens.at(4) == 1)||(q_tokens.at(4) == 2))
+							{
+								accepted = true;
+								break;
+							}
+						}
+						else
+						{
+							if((q_tokens.at(3) == 0)||(q_tokens.at(3) == 1)||(q_tokens.at(3) == 2))
+							{
+								accepted = true;
+								break;
+							}
+						}
+					}
+
+					else break;																
+				}
+				else
+				{
+					break;
+				}
+			}
+			else
+			{
+
+				if((q_tokens.at(0) == 0)||(q_tokens.at(0) == 1)||(q_tokens.at(0) == 2))
+				{
+					if(q_tokens.at(1) == 5)
+					{
+						if(q_tokens.at(2) == 6) has_preposition = true;
+						if(has_preposition)
+						{
+							if((q_tokens.at(3) == 0)||(q_tokens.at(3) == 1)||(q_tokens.at(3) == 2))
+							{
+								accepted = true;
+								break;
+							}
+						}
+						else
+						{
+							if((q_tokens.at(2) == 0)||(q_tokens.at(2) == 1)||(q_tokens.at(2) == 2))
+							{
+								accepted = true;
+								break;
+							}
+						}
+					}
+
+					else break;																
+				}
+				
+				else
+				{
+					break;
+				}
+
+			}
+
+		}
+				
+	}
+
+	cout<<"AAAAAAAAAAAAAAAAAAAAAAAAAAAAA"<<endl;
+	return accepted;
+
+
 }
 
 void remove_noise()
@@ -52,44 +223,60 @@ void remove_noise()
 	vector <int> noise_index(10);
 	vector <string> convo_tokens(10);
 	int index;
+	string corrected_convo = "";
 	for(int i = 0; i<conversation.size();i++)
 	{		
-		convo_tokens = tokenizer(conversation.at(i));
-		print_vector(convo_tokens);
+		convo_tokens = tokenizer(conversation.at(i));		
 		cout<<endl;
 		index = 0;
 		for(int j = 0;j<convo_tokens.size();j++)
 		{			
+
+			string temp = convo_tokens.at(j);
 						
 			if(!dictionary_Contains(convo_tokens.at(j)))
-			{
-				cout<<convo_tokens.at(j)<<endl;
+			{				
 				
 				if(convo_tokens.at(j).size() <= 3)
 				{
 					if((convo_tokens.at(j).compare("ugh") == 0 )||(convo_tokens.at(j).compare("hmm") == 0)||(convo_tokens.at(j).compare("ohh") == 0)
 						||(convo_tokens.at(j).compare("ahh") == 0)) 
-					{						
-						cout<<convo_tokens.at(j)<<" got ugh"<<endl;
+					{												
 						noise_index.at(index) = j;
 						index ++;
-					}					
+					}	
+					else
+					{
+						corrected_convo = corrected_convo + " " + temp;
+					}				
 				}
 
 				else
 				{
-					if((KMP_implementation(convo_tokens.at(j),"mmm"))||(KMP_implementation(convo_tokens.at(j),"hhh"))||(KMP_implementation(convo_tokens.at(j),"ooo"))
+					if((KMP_implementation(convo_tokens.at(j),"mmm"))||(KMP_implementation(convo_tokens.at(j),"hhh"))
+						||(KMP_implementation(convo_tokens.at(j),"ooo"))
 						||(KMP_implementation(convo_tokens.at(j),"ppp"))||(KMP_implementation(convo_tokens.at(j),"eee"))
 						||(KMP_implementation(convo_tokens.at(j),"haha"))||(KMP_implementation(convo_tokens.at(j),"hehe")))
-					{					
-						cout<<convo_tokens.at(j)<<" got ummmm"<<endl;	
+					{											
 						noise_index.at(index) = j;
 						index ++;
 					}
+					else
+					{
+						corrected_convo = corrected_convo + " " + temp;
+					}
 				}
 			}
+
+			else
+			{
+				corrected_convo = corrected_convo + " " + temp;
+			}
 		}
-	}
+		
+		conversation.at(i) = corrected_convo;	
+		corrected_convo.clear();	
+	}	
 }
 
 
@@ -258,7 +445,8 @@ void get_convo_info(string file_name)
         	index++;
         	word.clear();
         }     
-    	else word = word + x;    	
+    	else if(!is_not_punctuation(x)) word = word + " ";    	
+    	else word  = word + x;
     }
 
     conversation.at(index) = word;
@@ -311,7 +499,8 @@ void get_dictionary()
 		my_word.assign(word, size);
 		dictionary.at(index) = word;
 		index ++;		
-		string tag=e->Attribute("tags");		
+		string tag = e->Attribute("tags");	
+		cout<<tag<<endl;	
 	}
 
 }
@@ -341,7 +530,7 @@ void print_vector(vector<string> vec)
 {
 	for(int i = 0;i<vec.size();i++)
 	{
-		cout<<vec.at(i)<<" | ";
+		cout<<vec.at(i)<<endl;
 	}
 	cout<<endl;
 }
