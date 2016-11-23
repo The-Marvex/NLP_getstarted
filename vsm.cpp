@@ -19,6 +19,7 @@ vector<string> tokenizer(string sentence);
 vector<int> vector_generation(string query);
 bool vector_Contains(string word, vector<string> in_search_vector);
 void POS_tagging();
+void print_vector(vector<int> vec);
 void get_partial_match_table(string pattern_string, int pattern_len, int pmt[]);
 vector<int> get_white_spaces(string sentence);
 bool dictionary_Contains(string word);
@@ -36,47 +37,58 @@ int calculate_rank(string possible_soln, string query);
 bool is_not_punctuation(char x);
 bool parse_for_syntax ();
 void parse_convo();
+void extract_keywords();
 void get_convo_info(string file_name);
 void print_vector(vector<string> vec);
-vector <string> dictionary(50);
+vector <string> dictionary(100);
 int dictionary_index;
-vector <string> dictionary_desc(50);
+vector <string> dictionary_desc(100);
 void get_dictionary();
-vector <string> conversation(4);
-vector <vector<string> > keyword(4);
+vector <string> conversation(6);
+vector <string> keyword (6);
+
 
 int main()
 {	
-	get_dictionary();			
-	get_convo_info("text.txt");
-	remove_noise();		
+	get_dictionary();	
+	print_vector(dictionary);
+	print_vector(dictionary_desc);
+	get_convo_info("convo.txt");	
+	remove_noise();			
 	parse_convo();		
-	POS_tagging();
-
+	POS_tagging();	
+	extract_keywords();
+	vector_generation("what is your name");
+	minimum_edit_distance("sanjeev","anjeev");
+	suggest_command("plai");
+	
 }
 
-void extract_keywords(int i)
-{
 
+void extract_keywords()
+{
 	vector <string> alpha;	
-	int index  =0;
-	int index2 = 0;
+	int index  =0;	
+	string word = "";
+	word.clear();
 	for(int i = 0;i<conversation.size();i++)
 	{
 		alpha = tokenizer(conversation.at(i));
-		for(int j = 0;j < alpha.size(); j++)
+		for(int j = 1;j < alpha.size(); j++)
 		{
 			int k = get_index_in_vector(strtrim(alpha.at(j)), dictionary);
 
-			if((dictionary_desc.at(k).compare("NN"))||(dictionary_desc.at(k).compare("VB"))||(dictionary_desc.at(k).compare("AJ")))
-			{
-				keyword.at(index).at(index2) = dictionary.at(k);
-				index2++;
+			if((dictionary_desc.at(k).compare("NN") == 0)||(dictionary_desc.at(k).compare("VB") == 0)||(dictionary_desc.at(k).compare("AJ") == 0))
+			{				
+				word = word +" "+dictionary.at(k);
 			}			
 		}
-		index++;
-	}
 
+		keyword.at(index) = strtrim(word);	
+		index ++;	
+		word.clear();
+	}	
+	print_vector(keyword);
 }
 
 void parse_convo()
@@ -124,10 +136,12 @@ void POS_tagging()
 		tokens = tokenizer(conversation.at(i));				
 		for(int j = 0;j<tokens.size();j++)
 		{				
-			int k = get_index_in_vector(strtrim(tokens.at(j)), dictionary);
-			cout<<dictionary.at(k)<<" ";
-			cout<<dictionary_desc.at(k)<<endl;
-			//cout<<get_index_in_vector(strtrim(tokens.at(j)),dictionary_desc)<<endl;
+			if (tokens.at(j).size() > 0)			
+			{
+				int k = get_index_in_vector(strtrim(tokens.at(j)), dictionary);
+				cout<<dictionary.at(k)<<" ";
+				cout<<dictionary_desc.at(k)<<endl;
+			}
 		}
 		cout<<endl<<endl;
 	}
@@ -337,7 +351,7 @@ bool parse_for_syntax ()
 				
 	}
 
-	cout<<"AAAAAAAAAAAAAAAAAAAAAAAAAAAAA"<<endl;
+	//cout<<"AAAAAAAAAAAAAAAAAAAAAAAAAAAAA"<<endl;
 	if(accepted) cout<<"VALID INPUT"<<endl;
 	else cout<<"INVALID INPUT, plaese ask acc to grammar"<<endl;
 	return accepted;
@@ -520,6 +534,8 @@ int minimum_edit_distance(string alpha, string beeta)
 			}
 		}
 	}
+
+	//cout<<"The distance is: "<<distance_table[alpha.size()-1][beeta.size()-1]<<endl;
 	return distance_table[alpha.size()-1][beeta.size()-1];
 }
 
@@ -539,10 +555,10 @@ void suggest_command(string input)
 	index = 0; min= 1000;
 	bool x;
 	x = false;
-	for(int i = 0;i<9;i++)
+	for(int i = 0;i<dictionary.size();i++)
 	{
-		//temp = minimum_edit_distance(input, arr[i]);		
-		if(min>temp) 
+		temp = minimum_edit_distance(input, dictionary.at(i));		
+		if(min > temp) 
 		{
 			min = temp;
 			index = i;
@@ -550,7 +566,7 @@ void suggest_command(string input)
 	}		
 	if ((min <= 3)&&(min>=1)) 
 	{
-		//cout<<"Do you mean '"<<arr[index]<<"'"<<endl;
+		cout<<"Do you mean '"<<dictionary.at(index)<<"'"<<endl;
 		x = true;
 	}		
 	cout<<endl;
@@ -585,23 +601,6 @@ void get_convo_info(string file_name)
 }
 
 
-string get_data_string(string file_name)
-{
-	ifstream file(file_name.c_str());
-    string word;
-    char x ;
-    word.clear();
-    int count  = 0;
-    while (((x = file.get())!= EOF))
-    {
-    	if(is_not_punctuation(x))
-        word = word + x;
-    	else
-    	word = word + " ";
-    }
-    file.close();
-    return word;   
-}
 
 bool is_not_punctuation(char x)
 {
@@ -625,8 +624,7 @@ void get_dictionary()
 		const char* word = token->GetText();		
 		int size = strlen(word);		
 		my_word.assign(word, size);
-		dictionary.at(dictionary_index) = word;		
-		
+		dictionary.at(dictionary_index) = word;				
 		string tag = e->Attribute("tags");	
 		dictionary_desc.at(dictionary_index) = tag;		
 		dictionary_index ++;	
@@ -636,13 +634,15 @@ void get_dictionary()
 
 vector<int> vector_generation(string query)
 {	
+	print_vector(keyword);	
 	int index = 0;
 	vector <string> tokens = tokenizer(query);
+	print_vector(tokens);	
 	vector <int> query_vector(dictionary.size());	
 	for(int i = 0;i< dictionary.size();i++)
 	{
-		if(vector_Contains(dictionary.at(i), tokens))
-		{									
+		if(vector_Contains(strtrim(dictionary.at(i)), tokens))
+		{						
 			query_vector.at(index) = 1;
 		}
 
@@ -651,7 +651,9 @@ vector<int> vector_generation(string query)
 			query_vector.at(index) = 0;
 		}		
 		index++;
-	}		
+	}	
+	
+	print_vector(query_vector);
 	return query_vector;	
 }
 
@@ -664,13 +666,24 @@ void print_vector(vector<string> vec)
 	cout<<endl;
 }
 
+void print_vector(vector<int> vec)
+{
+	for(int i = 0;i<vec.size();i++)
+	{
+		cout<<vec.at(i)<<" ";
+	}
+	cout<<endl;
+}
+
 
 bool vector_Contains(string word, vector<string> in_search_vector)
 {
 	int p = 0;	
+
 	for(int i = 0;i< in_search_vector.size();i++)
-	{
-		if(word.compare(in_search_vector.at(i)) == 0)
+	{		
+
+		if(word.compare(strtrim(in_search_vector.at(i))) == 0)
 		{
 			p = 1;
 			break;			
@@ -686,17 +699,17 @@ bool vector_Contains(string word, vector<string> in_search_vector)
 
 int calculate_rank(string possible_soln, string query)
 {
-	cout<<"ENTERED"<<endl;
 	int sum = 0;
 	vector<int> candidate_v = vector_generation(possible_soln);
-	vector<int> query_v = vector_generation(query);
-
-	cout<<candidate_v.size()<<"  "<<query_v.size()<<endl;
-
+	vector<int> query_v = vector_generation(query);		
 	for(int i = 0;i<candidate_v.size();i++)
 	{
 		sum = sum + candidate_v.at(i)*query_v.at(i);
 	}
+
+	print_vector(candidate_v);	
+	print_vector(query_v);		
+	cout<<sum;
 	return sum;
 }
 
@@ -769,7 +782,7 @@ vector<string> tokenizer(string sentence)
 
 vector<int> get_white_spaces(string sentence)
 {
-	vector<int> space_index(20);
+	vector<int> space_index(150);
 	char x;
 	int i = 0;
 	int j,k;
@@ -847,3 +860,4 @@ string strtrim(string sentence)
 	}
 	return trm_str;
 }
+
