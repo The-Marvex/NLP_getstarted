@@ -14,6 +14,8 @@ int main()
 	getline(cin, alpha);
 	suggest_command(alpha);		
 }
+
+
 int minimum_edit_distance(string alpha, string beeta)
 {
 	alpha = '#' + alpha;

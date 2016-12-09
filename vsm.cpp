@@ -62,6 +62,9 @@ int main()
 	minimum_edit_distance("sanjeev","anjeev");
 	suggest_command("plai");
 	
+	calculate_rank("my name is sherlocked","my name");
+	calculate_rank("I play Football", "do you play Football");
+	
 }
 
 
@@ -699,13 +702,21 @@ bool vector_Contains(string word, vector<string> in_search_vector)
 
 int calculate_rank(string possible_soln, string query)
 {
+	cout<<"SSSSSSS"<<endl;
 	int sum = 0;
-	vector<int> candidate_v = vector_generation(possible_soln);
-	vector<int> query_v = vector_generation(query);		
+	vector <int> candidate_v(dictionary.size());
+	vector <int> query_v(dictionary.size());
+	cout<<"Peter"<<endl;
+	candidate_v= vector_generation(possible_soln);
+	cout<<"Peter"<<endl;
+	query_v = vector_generation(query);	
+	cout<<"Peter"<<endl;
+
 	for(int i = 0;i<candidate_v.size();i++)
 	{
 		sum = sum + candidate_v.at(i)*query_v.at(i);
 	}
+	cout<<"Peter"<<endl;
 
 	print_vector(candidate_v);	
 	print_vector(query_v);		

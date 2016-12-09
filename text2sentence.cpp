@@ -21,16 +21,13 @@ string data_string;
 
 
 int main()
-{		
-	string input_string;
-    cout<<"Enter something"<<endl;
-    getline(cin, input_string);    
-    vector<string> my_token = tokenize_sentence(input_string);
-    for(int x = 0;x<my_token.size();x++)	
-	{
-		cout<<my_token.at(x)<<" ";
-	}
-		
+{			
+		file_name = "nlp.txt";
+		string text = get_data_string();
+		cout<<text<<endl;
+		vector <string> lines = text2sentence (text);
+		count_lines();
+
 }
 
 vector <string> text2sentence(string text)
@@ -91,8 +88,7 @@ vector <string> text2sentence(string text)
     {
     	cout<<sentences.at(i)<<endl;
     }
-
-    cout<<"The no of lines is : "<<no_of_lines<<endl;
+    
 }
 
 
@@ -188,6 +184,7 @@ vector<string> tokenizer(string sentence)
 	}	
 	return tokens;
 }
+
 vector<int> get_white_spaces(string sentence)
 {	
 	vector<int> space_index(20);
